@@ -1,32 +1,24 @@
 const express = require('express');
+const cookieParse = require('cookie-parser');
+const handle = require('./handle')
 const app = express();
-// app.enable('case sensitive routing');
-
-// app.param('id', (req, res, next, id) => {
-//   const user = {
-//     userId: id,
-//     name: 'Bangladesh',
-//   };
-//   req.userDeatils = user;
-//   next();
-// });
-// app.get('/user/:id', (req, res) => {
-//   console.log(req.userDeatils);
-//   res.send('Wellcome to application home');
-// });
-app.set('view engine', 'ejs');
-
-app
-  .route('/about/mission')
-  .get((req, res) => {
-    res.render('pages/about');
-  })
-  .post((req, res) => {
-    res.send('Wellcome to home post');
-  })
-  .put((req, res) => {
-    res.send('Wellcome to home put');
-  });
+app.use(express.json());
+app.use(cookieParse());
+const adminRoute = express.Router();
+adminRoute.get('/dashboard', (req, res) => {
+  // console.log(req.originalUrl);
+  // console.log(req.url);
+  // console.log(req.path);
+  // console.log(req.hostname);
+  console.log(req.ip);
+  res.send('We are in admin dashboard');
+});
+app.use('/admin', adminRoute);
+app.get('/user/:id', handle);
+app.post('/user', (req, res) => {
+  console.log(req.route);
+  res.send('Hello world post');
+});
 app.listen(3000, () => {
-  console.log('listening on port 3000');
+  console.log('listening port on 3000');
 });
