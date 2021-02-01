@@ -1,34 +1,32 @@
-const { Router } = require('express');
 const express = require('express');
 const app = express();
-// app.use(express.json());
-// app.use(express.raw());
-// app.use(express.urlencoded());
-// app.use(
-//   express.static(`${__dirname}/public/`, {
-//     index: 'home.html',
-//   })
-// );
+// app.enable('case sensitive routing');
 
-const router = express.Router({
-  caseSensitive: true,
+// app.param('id', (req, res, next, id) => {
+//   const user = {
+//     userId: id,
+//     name: 'Bangladesh',
+//   };
+//   req.userDeatils = user;
+//   next();
+// });
+// app.get('/user/:id', (req, res) => {
+//   console.log(req.userDeatils);
+//   res.send('Wellcome to application home');
+// });
+app.set('view engine', 'ejs');
+
+app
+  .route('/about/mission')
+  .get((req, res) => {
+    res.render('pages/about');
+  })
+  .post((req, res) => {
+    res.send('Wellcome to home post');
+  })
+  .put((req, res) => {
+    res.send('Wellcome to home put');
+  });
+app.listen(3000, () => {
+  console.log('listening on port 3000');
 });
-app.use(router);
-router.get('/', (req, res) => {
-  res.send('This is home page');
-});
-app.post('/', (req, res) => {
-  console.log(req.body);
-  res.send('This is home page with post request');
-});
-router.get('/about', (req, res) => {
-  res.send('<h1>this is about page</h1>');
-});
-app.get('*', (req, res) => {
-  res.send('<h1>404: NOT FOUND</h1>');
-});
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`listeing port in ${PORT}`);
-});
-// console.log(express);
