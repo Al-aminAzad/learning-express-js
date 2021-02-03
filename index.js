@@ -1,55 +1,51 @@
 const express = require('express');
 const app = express();
+const adminRouter = express.Router();
+const cookieParser = require('cookie-parser');
 
-app.set('view engine', 'ejs');
-app.get('/test', (req, res) => {
-  res.send('Redirect from about');
+app.use(cookieParser());
+app.use(express.json());
+
+//middleware function
+const loggerWrapper = (options) => {
+  return function (req, res, next) {
+    if (options.log) {
+      console.log(
+        `${new Date(Date.now()).toLocaleString()}-${req.method}-${req.originalUrl}-${req.protocol}-${req.ip}`
+      );
+      next();
+    } else {
+      throw new Error('Failed to log');
+    }
+  };
+};
+// const logger = (req, res, next) => {
+//   console.log(`${new Date(Date.now()).toLocaleString()}-${req.method}-${req.originalUrl}-${req.protocol}-${req.ip}`);
+//   // next();
+//   // res.end();
+//   throw new Error('This is an error');
+// };
+adminRouter.use(loggerWrapper({ log: true }));
+
+adminRouter.get('/dashboard', (req, res) => {
+  res.send('Welcome to dasshboard');
 });
+
+app.use('/admin', adminRouter);
+
 
 app.get('/about', (req, res) => {
-  // console.log(res.headersSent);
-  // res.render('pages/about', {
-  //   name: 'Bangladesh',
-  // });
-  // console.log(res.headersSent);
-  // res.send('About page');
-  // res.end();
-  // res.json({
-  //   name: 'Bangladesh',
-  //   language: 'Bangla',
-  // });
-  // res.status(200);
-  // res.end();
-  // res.sendStatus(500);
-  // res.format({
-  //   'text/plain': () => {
-  //     res.send('Hi');
-  //   },
-  //   'text/html': () => {
-  //     res.render('pages/about', {
-  //       name: 'Bangladesh',
-  //     });
-  //   },
-  //   'application/json': () => {
-  //     res.json({
-  //       message: 'About',
-  //     });
-  //   },
-  //   default: ()=>{
-  //     res.status(403).send('Not acceptable');
-  //   }
-  // });
-  // res.cookie('name','Alamin azad',{
-
-  // });
-  // res.end();
-  // res.redirect('/test');
-  // res.end();
-  res.set('platform', 'learn with sumit');
-  console.log(res.get('platform'));
-  res.end();
+  res.send('About page');
 });
 
+
+const errorMiddleware = (err, req, res, next) => {
+  console.log(err.message);
+  res.status(500).send('There was an server side error');
+};
+
+adminRouter.use(errorMiddleware);
+
 app.listen(3000, () => {
-  console.log('listening in port 3000');
+  console.log('Listening port on 3000');
 });
